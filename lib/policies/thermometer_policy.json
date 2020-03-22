@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["iot:Publish", "iot:Receive"],
+      "Resource": ["arn:aws:iot:us-east-1:846282225459:topic/thermometer/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["iot:GetThingShadow"],
+      "Resource": ["arn:aws:iot:us-east-1:846282225459:thing/Thermometer}/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["iot:Subscribe"],
+      "Resource": [
+        "arn:aws:iot:us-east-1:846282225459:topicfilter/thermometer/*"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["iot:Connect"],
+      "Resource": ["arn:aws:iot:us-east-1:846282225459:client/Thermometer"],
+      "Effect": "Allow",
+      "Condition": {
+        "Bool": {
+          "iot:Connection.Thing.IsAttached": ["true"]
+        }
+      }
+    }
+  ]
+}

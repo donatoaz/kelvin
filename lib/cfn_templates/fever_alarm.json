@@ -1,0 +1,26 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "",
+  "Metadata": {},
+  "Parameters": {},
+  "Mappings": {},
+  "Conditions": {},
+  "Resources": {
+    "FeverAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "FeverAlarm",
+        "MetricName": "temperature",
+        "Namespace": "IoTThermometer",
+        "ComparisonOperator": "GreaterThanThreshold",
+        "DatapointsToAlarm": 5,
+        "EvaluationPeriods": 5,
+        "Statistic": "Average",
+        "Period": 60,
+        "Threshold": 379,
+        "Unit": "None"
+      }
+    }
+  },
+  "Outputs": {}
+}
