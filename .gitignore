@@ -12,3 +12,4 @@ cdk.out
 *.crt
 *.srl
 *.ignore
+.DS_Store

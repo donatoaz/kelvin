@@ -2,7 +2,15 @@
 
 ## Quickstart
 
+Install AWS and CDK cli, configure your profile.
+
+Replace all occurrences of my AccountId with yours -- yeah, I should probably replace that with a pseudo reference.
+
+Run `npm run build`.
+
 Run `cdk deploy --profile your_profile_name` to deploy stack/change sets.
+
+## Changing stuff
 
 Run `cdk diff --profile your_profile_name` to view changes you make in the infrastructure.
 
