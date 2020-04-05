@@ -13,3 +13,5 @@ cdk.out
 *.srl
 *.ignore
 .DS_Store
+.vscode/
+cdk.context.json

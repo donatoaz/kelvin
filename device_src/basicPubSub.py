@@ -16,12 +16,13 @@
  '''
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+from AWSIoTPythonSDK.exception.AWSIoTExceptions import connectTimeoutException, publishTimeoutException
 import logging
 import time
 import argparse
 import json
-from random import randrange
 from w1thermsensor import W1ThermSensor, SensorNotReadyError
+from retrying import retry
 
 AllowedActions = ['both', 'publish', 'subscribe']
 
@@ -47,7 +48,7 @@ parser.add_argument("-id", "--clientId", action="store", dest="clientId", defaul
                     help="Targeted client id")
 parser.add_argument("-t", "--topic", action="store", dest="topic", default="sdk/test/Python", help="Targeted topic")
 parser.add_argument("-m", "--mode", action="store", dest="mode", default="both",
-                    help="Operation modes: %s"%str(AllowedActions))
+                    help="Operation modes: %s" % str(AllowedActions))
 parser.add_argument("-M", "--message", action="store", dest="message", default="Hello World!",
                     help="Message to publish")
 
@@ -105,12 +106,20 @@ myAWSIoTMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
 myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
-# Connect and subscribe to AWS IoT
-myAWSIoTMQTTClient.connect()
-if args.mode == 'both' or args.mode == 'subscribe':
-    myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
-time.sleep(2)
+@retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
+def connect_to_broker():
+    # Connect and subscribe to AWS IoT
+    print("Connecting to broker with retries...")
+    try:
+        myAWSIoTMQTTClient.connect()
+    except connectTimeoutException:
+        raise BaseException("Failed to connect")
+    if args.mode == 'both' or args.mode == 'subscribe':
+        myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+    time.sleep(2)
 
+
+connect_to_broker()
 # Publish to the same topic in a loop forever
 sensor = W1ThermSensor()
 temperature = 0
@@ -129,5 +138,7 @@ while True:
                 print('Published topic %s: %s\n' % (topic, messageJson))
         except SensorNotReadyError:
             print("Sensor %s is not ready to read")
+        except publishTimeoutException:
+            print("Timedout trying to publish")
 
     time.sleep(10)
