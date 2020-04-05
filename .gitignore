@@ -15,3 +15,4 @@ cdk.out
 .DS_Store
 .vscode/
 cdk.context.json
+rootCA_openssl.conf
